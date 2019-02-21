@@ -43,7 +43,7 @@
             <groupId>com.github.JayDamon</groupId>
             <artifactId>auron</artifactId>
             <!--<version>1.0.0</version>-->
-            <version>cd29dc38498e1dc4cf7b0d9187f2b1c90b8473b4</version>
+            <version>35ee81e561759111261ec2fb6d2e346bad7062fc</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
