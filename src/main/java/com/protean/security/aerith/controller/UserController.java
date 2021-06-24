@@ -11,7 +11,10 @@ import com.protean.security.auron.repository.RoleRepository;
 import com.protean.security.auron.repository.UserRepository;
 import com.protean.security.auron.response.BaseResponse;
 import com.protean.security.auron.response.JwtAuthenticationResponse;
+import com.protean.security.auron.response.StandardResponse;
 import com.protean.security.auron.security.JwtTokenProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +22,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,10 +33,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Collections;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/auth/")
 public class UserController {
+
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     private AuthenticationManager authenticationManager;
 
@@ -53,6 +61,15 @@ public class UserController {
         this.tokenProvider = tokenProvider;
     }
 
+    @GetMapping("/user")
+    public ResponseEntity<?> getAllUsers() {
+        log.info("Searching for users");
+        List<User> users = userRepository.findAll();
+        log.info("User records found <" + users.size() + ">");
+        StandardResponse<List<User>> userResponse = new StandardResponse<>(HttpStatus.OK, users);
+        return new ResponseEntity<>(userResponse, HttpStatus.OK);
+    }
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -67,7 +84,10 @@ public class UserController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = tokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+
+        log.info("Responding with successful login response for user: <" + loginRequest.getUsernameOrEmail() + ">");
+        return new ResponseEntity<>(new JwtAuthenticationResponse(jwt), HttpStatus.OK);
+//        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 
     @PostMapping("/signup")

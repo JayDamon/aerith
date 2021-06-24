@@ -32,6 +32,7 @@ public class AerithSecurityConfig extends AuronSecurityConfig {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         http
                 .cors()
                 .and()
@@ -69,4 +70,5 @@ public class AerithSecurityConfig extends AuronSecurityConfig {
         http.headers().frameOptions().disable();
 
     }
+
 }
